@@ -6,15 +6,29 @@ class PostList extends Component {
     console.log(posts)
     const postList = posts.map((post)=>{
       return(
-        <div key={post.postId} className="postEdit">
-       <li key={post.postId} id={post.postId}>{post.postName}----{post.postComment}</li>
-       <button id={post.postId} onClick={this.props.populateUpdatePost(post.postId)}>Update</button>
-       <button id={post.postId} onClick={this.props.populateDeletePost(post.postId)}>Delete</button>
-       </div>
+       <tr key={post.postId}>
+       <td >{post.postName}</td>
+       <td >{post.postComment}</td>
+       <td  className="right aligned"><button className="tiny ui primary  button" id={post.postId} onClick={this.props.populateUpdatePost(post.postId)}>Update</button></td>
+       <td  className="right aligned"><button className="tiny negative ui  button" id={post.postId} onClick={this.props.populateDeletePost(post.postId)}>Delete</button></td>
+     </tr>
       )
      } );
     return (
-      <ul>{postList}</ul>
+      // <ul>{postList}</ul>
+      <table className="ui unstackable table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Content</th>
+      <th className="right aligned">Edit</th>
+      <th className="right aligned">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+  {postList}
+  </tbody>
+</table>
     )
   }
 }

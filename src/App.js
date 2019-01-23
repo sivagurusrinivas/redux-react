@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import './App.css';
-import PostList from './PostList';
 import {connect} from 'react-redux'
 
+import PostList from './PostList';
+
+import './App.css';
+import '../node_modules/semantic-ui-css/semantic.min.css';
 class App extends Component {
   constructor(){
     super();
@@ -54,11 +56,11 @@ this.props.addPost(addPayload);
         this.updatePostComment.current.value=post.postComment;
       }
     })
-
+    this.props.toggleUpdateForm();
   }
 
   populateDeletePost = (postId) =>(e)=>{
-    console.log("Populate Delete  "+postId);
+   
     this.props.posts.forEach((post)=>{
       if(post.postId===postId){
 
@@ -70,6 +72,7 @@ this.props.addPost(addPayload);
         this.deletePostComment.current.value=post.postComment;
       }
     })
+    this.props.toggleDeleteForm();
 
   }
   updatePost = e => {
@@ -94,6 +97,16 @@ this.props.addPost(addPayload);
     //     return post
     //   })
     // }));
+    this.toogleAdd();
+  }
+
+  toogleAdd = e =>{
+  
+    this.addPostName.current.value='';
+    this.addPostComment.current.value='';
+    this.props.toggleAddForm();
+    if(e!==undefined)
+    e.preventDefault();
   }
 
   deletePost = e => {
@@ -106,59 +119,55 @@ this.props.addPost(addPayload);
     // this.setState((state,props)=>({
     //   posts:state.posts.filter(post=>post.postId!==deletePostId)
     // }));
+    this.toogleAdd();
   }
   render() {
-    let activeForm;
-   
-    if(this.props.addActive){
-       activeForm=(
-        <div className="addForm">
-        <input ref={this.addPostName} type="text"></input>
-        <input ref={this.addPostComment} type="text"></input>
-        <button onClick={this.addPost}>Add</button>
-        </div>
-      )
+    var addStyle = {
+			display: !this.props.addActive ? "none" : "block"
     }
-    else if(this.props.updateActive){
-       activeForm=(
-        <div className="updateForm">
-        <input ref={this.updatePostName} type="text"></input>
-        <input ref={this.updatePostComment} type="text"></input>
-        <button onClick={this.updatePost}>Update</button>
-        </div>
-      )
+    var updateStyle = {
+			display: !this.props.updateActive ? "none" : "block"
     }
-    else if(this.props.deleteActive){
-       activeForm=(
-        <div className="deleteForm">
-        <input ref={this.deletePostName} type="text" readOnly></input>
-        <input ref={this.deletePostComment} type="text" readOnly></input>
-        <button onClick={this.deletePost}>Delete</button>
-        </div>
-      )
+    var deleteStyle = {
+			display: !this.props.deleteActive ? "none" : "block"
+    }
+    var marginTop200={
+      marginTop:'200px'
+    }
+    var marginTop10={
+      marginTop:'10px'
     }
     return (
       <div className="App">
+        <div className="ui two column centered grid">
+        <div className="column">
       <PostList posts={this.props.posts} populateUpdatePost={this.populateUpdatePost} populateDeletePost={this.populateDeletePost}/>
-      <form>
       
-      <div className="addForm">
-        <input ref={this.addPostName} type="text"></input>
-        <input ref={this.addPostComment} type="text"></input>
-        <button onClick={this.addPost}>Add</button>
+      <div className="postForms" style={marginTop200}>
+      <div className="addForm ui input" style={addStyle}>
+        <input ref={this.addPostName} type="text" placeholder="Post"></input>
+        <input ref={this.addPostComment} type="text" placeholder="Content"></input>
+        <br></br>
+        <button className="positive ui button" style={marginTop10} onClick={this.addPost}>Add</button>
         </div>
-        <div className="updateForm">
+        <div className="updateForm ui input" style={updateStyle}>
         <input ref={this.updatePostName} type="text"></input>
         <input ref={this.updatePostComment} type="text"></input>
-        <button onClick={this.updatePost}>Update</button>
+        <br></br>
+        <button style={marginTop10} className="ui primary button" onClick={this.updatePost}>Update</button>
+        <button  style={marginTop10} className="ui button" onClick={this.toogleAdd}>Cancel</button>
+        <br></br>
         </div>
-        <div className="deleteForm">
-        <input ref={this.deletePostName} type="text" readOnly></input>
-        <input ref={this.deletePostComment} type="text" readOnly></input>
-        <button onClick={this.deletePost}>Delete</button>
+        <div className="deleteForm ui input" style={deleteStyle}>
+        <input style={marginTop10} className="ui disabled input"ref={this.deletePostName} type="text" readOnly></input>
+        <input style={marginTop10} className="ui disabled input" ref={this.deletePostComment} type="text" readOnly></input>
+        <br></br>
+        <button className="negative ui button" onClick={this.deletePost}>Delete</button>
+        <button className="ui button" onClick={this.toogleAdd}>Cancel</button>
         </div>
-        
-      </form>
+        </div>
+        </div>
+        </div>
       </div>
     );
   }
