@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import PostList from './PostList';
+import {connect} from 'react-redux'
 
 class App extends Component {
   constructor(){
@@ -15,7 +16,7 @@ class App extends Component {
       addActive:true,
       updateActive:false,
       deleteActive:false,
-      postId:0,
+      postCount:0,
       posts:[{postId:100,postName:"Hello Hello",postComment:"Hey"}],
       currentPost:{}
     }
@@ -28,20 +29,27 @@ class App extends Component {
     e.preventDefault();
    const newPostName = this.addPostName.current.value;
    const newPostComment = this.addPostComment.current.value;
+
+   const addPayload =  {
+    postName: newPostName,
+    postComment: newPostComment
+}
+this.props.addPost(addPayload);
    
-    this.setState((state,props)=>({
-      postId:state.postId+1,
-      posts:[...state.posts,{postId:state.postId+1,postName:newPostName,postComment:newPostComment}]
-    }));
+    // this.setState((state,props)=>({
+    //   postId:state.postCount+1,
+    //   posts:[...state.posts,{postId:state.postCount+1,postName:newPostName,postComment:newPostComment}]
+    // }));
   }
   populateUpdatePost = (postId) =>(e)=>{
-    console.log("Populate Update  "+postId);
-    this.state.posts.forEach((post)=>{
+    this.props.toggleUpdateForm();
+    this.props.posts.forEach((post)=>{
       if(post.postId===postId){
 
-        this.setState((state,props)=>({
-          currentPost:post
-        }));
+        // this.setState((state,props)=>({
+        //   currentPost:post
+        // }));
+        this.props.setCurrentPost({post:post});
         this.updatePostName.current.value=post.postName;
         this.updatePostComment.current.value=post.postComment;
       }
@@ -50,13 +58,14 @@ class App extends Component {
   }
 
   populateDeletePost = (postId) =>(e)=>{
-    console.log("Populate Update  "+postId);
-    this.state.posts.forEach((post)=>{
+    console.log("Populate Delete  "+postId);
+    this.props.posts.forEach((post)=>{
       if(post.postId===postId){
 
-        this.setState((state,props)=>({
-          currentPost:post
-        }));
+        // this.setState((state,props)=>({
+        //   currentPost:post
+        // }));
+        this.props.setCurrentPost({post:post});
         this.deletePostName.current.value=post.postName;
         this.deletePostComment.current.value=post.postComment;
       }
@@ -65,61 +74,115 @@ class App extends Component {
   }
   updatePost = e => {
     e.preventDefault();
-    const updatePostId = this.state.currentPost.postId;
+    const updatePostId = this.props.currentPost.postId;
    const updatePostName = this.updatePostName.current.value;
    const updatePostComment = this.updatePostComment.current.value;
-    this.setState((state,props)=>({
-      posts:state.posts.map((post)=>{
-        if(post.postId===updatePostId){
-          post.postName=updatePostName
-          post.postComment=updatePostComment
-          return post
-        }
-        return post
-      })
-    }));
+
+   const updatePayload = {
+     postId:updatePostId,
+     postName:updatePostName,
+     postComment:updatePostComment
+   }
+   this.props.updatePost(updatePayload);
+    // this.setState((state,props)=>({
+    //   posts:state.posts.map((post)=>{
+    //     if(post.postId===updatePostId){
+    //       post.postName=updatePostName
+    //       post.postComment=updatePostComment
+    //       return post
+    //     }
+    //     return post
+    //   })
+    // }));
   }
 
   deletePost = e => {
     e.preventDefault();
-    const deletePostId = this.state.currentPost.postId;
-    this.setState((state,props)=>({
-      posts:state.posts.filter(post=>post.postId!==deletePostId)
-    }));
+    const deletePostId = this.props.currentPost.postId;
+    const deletPayload={
+      postId:deletePostId
+    }
+    this.props.deletePost(deletPayload);
+    // this.setState((state,props)=>({
+    //   posts:state.posts.filter(post=>post.postId!==deletePostId)
+    // }));
   }
   render() {
-    return (
-      <div className="App">
-      <PostList posts={this.state.posts} populateUpdatePost={this.populateUpdatePost} populateDeletePost={this.populateDeletePost}/>
-      <form>
-      
+    let activeForm;
+   
+    if(this.props.addActive){
+       activeForm=(
+        <div className="addForm">
         <input ref={this.addPostName} type="text"></input>
         <input ref={this.addPostComment} type="text"></input>
         <button onClick={this.addPost}>Add</button>
-      
-       
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
+        </div>
+      )
+    }
+    else if(this.props.updateActive){
+       activeForm=(
+        <div className="updateForm">
         <input ref={this.updatePostName} type="text"></input>
         <input ref={this.updatePostComment} type="text"></input>
         <button onClick={this.updatePost}>Update</button>
-        
-
-       
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
+        </div>
+      )
+    }
+    else if(this.props.deleteActive){
+       activeForm=(
+        <div className="deleteForm">
         <input ref={this.deletePostName} type="text" readOnly></input>
         <input ref={this.deletePostComment} type="text" readOnly></input>
         <button onClick={this.deletePost}>Delete</button>
+        </div>
+      )
+    }
+    return (
+      <div className="App">
+      <PostList posts={this.props.posts} populateUpdatePost={this.populateUpdatePost} populateDeletePost={this.populateDeletePost}/>
+      <form>
+      
+      <div className="addForm">
+        <input ref={this.addPostName} type="text"></input>
+        <input ref={this.addPostComment} type="text"></input>
+        <button onClick={this.addPost}>Add</button>
+        </div>
+        <div className="updateForm">
+        <input ref={this.updatePostName} type="text"></input>
+        <input ref={this.updatePostComment} type="text"></input>
+        <button onClick={this.updatePost}>Update</button>
+        </div>
+        <div className="deleteForm">
+        <input ref={this.deletePostName} type="text" readOnly></input>
+        <input ref={this.deletePostComment} type="text" readOnly></input>
+        <button onClick={this.deletePost}>Delete</button>
+        </div>
         
       </form>
       </div>
     );
   }
 }
+const mapStateToProps = (state)=>{
+  return{
+    addActive:state.addActive,
+      updateActive:state.updateActive,
+      deleteActive:state.deleteActive,
+      postCount:state.postCount,
+      posts:state.posts,
+      currentPost:state.currentPost
+  }
+}
 
-export default App;
+const mapDispatchToProps = (dispatch)=>{
+  return {
+    toggleAddForm:()=>dispatch({type:'TOGGLE_ADD_FORM'}),
+    toggleUpdateForm:()=>dispatch({type:'TOGGLE_UPDATE_FORM'}),
+    toggleDeleteForm:()=>dispatch({type:'TOGGLE_DELETE_FORM'}),
+    addPost:(payload)=>dispatch( {type: 'ADD_POST',payload:payload}),
+    updatePost:(payload)=>dispatch( {type: 'UPDATE_POST',payload:payload}),
+    deletePost:(payload)=>dispatch( {type: 'DELETE_POST',payload:payload}),
+    setCurrentPost:(payload)=>dispatch( {type: 'SET_CURRENT_POST',payload:payload})
+  }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(App);
