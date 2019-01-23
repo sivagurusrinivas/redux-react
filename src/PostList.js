@@ -1,16 +1,20 @@
 import React, { Component } from 'react'
 class PostList extends Component {
+  
   render() {
+    const posts = this.props.posts
+    console.log(posts)
+    const postList = posts.map((post)=>{
+      return(
+        <div key={post.postId} className="postEdit">
+       <li key={post.postId} id={post.postId}>{post.postName}----{post.postComment}</li>
+       <button id={post.postId} onClick={this.props.populateUpdatePost(post.postId)}>Update</button>
+       <button id={post.postId} onClick={this.props.populateDeletePost(post.postId)}>Delete</button>
+       </div>
+      )
+     } );
     return (
-      <div className="postListMain">
-        <div className="header">
-          <form onSubmit="{this.props.addItem}">
-            <input placeholder="Title" />
-            <input placeholder="Comment" />
-            <button type="submit"> Add Post </button>
-          </form>
-        </div>
-      </div>
+      <ul>{postList}</ul>
     )
   }
 }
