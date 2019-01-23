@@ -14,19 +14,9 @@ class App extends Component {
     this.updatePostComment = React.createRef();
     this.deletePostName = React.createRef();
     this.deletePostComment = React.createRef();
-    this.state={
-      addActive:true,
-      updateActive:false,
-      deleteActive:false,
-      postCount:0,
-      posts:[{postId:100,postName:"Hello Hello",postComment:"Hey"}],
-      currentPost:{}
-    }
   }
 
-  handleInput = e => {
-    console.log('Hello Input')
-  }
+ 
   addPost = e => {
     e.preventDefault();
    const newPostName = this.addPostName.current.value;
@@ -38,19 +28,12 @@ class App extends Component {
 }
 this.props.addPost(addPayload);
    
-    // this.setState((state,props)=>({
-    //   postId:state.postCount+1,
-    //   posts:[...state.posts,{postId:state.postCount+1,postName:newPostName,postComment:newPostComment}]
-    // }));
+ 
   }
   populateUpdatePost = (postId) =>(e)=>{
     this.props.toggleUpdateForm();
     this.props.posts.forEach((post)=>{
       if(post.postId===postId){
-
-        // this.setState((state,props)=>({
-        //   currentPost:post
-        // }));
         this.props.setCurrentPost({post:post});
         this.updatePostName.current.value=post.postName;
         this.updatePostComment.current.value=post.postComment;
@@ -63,10 +46,6 @@ this.props.addPost(addPayload);
    
     this.props.posts.forEach((post)=>{
       if(post.postId===postId){
-
-        // this.setState((state,props)=>({
-        //   currentPost:post
-        // }));
         this.props.setCurrentPost({post:post});
         this.deletePostName.current.value=post.postName;
         this.deletePostComment.current.value=post.postComment;
@@ -87,16 +66,6 @@ this.props.addPost(addPayload);
      postComment:updatePostComment
    }
    this.props.updatePost(updatePayload);
-    // this.setState((state,props)=>({
-    //   posts:state.posts.map((post)=>{
-    //     if(post.postId===updatePostId){
-    //       post.postName=updatePostName
-    //       post.postComment=updatePostComment
-    //       return post
-    //     }
-    //     return post
-    //   })
-    // }));
     this.toogleAdd();
   }
 
@@ -116,9 +85,6 @@ this.props.addPost(addPayload);
       postId:deletePostId
     }
     this.props.deletePost(deletPayload);
-    // this.setState((state,props)=>({
-    //   posts:state.posts.filter(post=>post.postId!==deletePostId)
-    // }));
     this.toogleAdd();
   }
   render() {
@@ -174,7 +140,7 @@ this.props.addPost(addPayload);
 }
 const mapStateToProps = (state)=>{
   return{
-    addActive:state.addActive,
+      addActive:state.addActive,
       updateActive:state.updateActive,
       deleteActive:state.deleteActive,
       postCount:state.postCount,

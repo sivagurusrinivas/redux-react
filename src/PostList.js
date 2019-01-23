@@ -15,7 +15,6 @@ class PostList extends Component {
       )
      } );
     return (
-      // <ul>{postList}</ul>
       <table className="ui unstackable table">
   <thead>
     <tr>
